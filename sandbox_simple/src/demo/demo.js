@@ -24,7 +24,7 @@ const initTree = checkTree(loadTree(initValue), loadedConfig);
 
 
 export default class DemoQueryBuilder extends Component {
-    
+
     state = {
       tree: initTree,
       config: loadedConfig
@@ -32,8 +32,8 @@ export default class DemoQueryBuilder extends Component {
 
     render = () => (
       <div>
-        <Query 
-          {...loadedConfig} 
+        <Query
+          {...loadedConfig}
           value={this.state.tree}
           onChange={this.onChange}
           renderBuilder={this.renderBuilder}
@@ -41,6 +41,7 @@ export default class DemoQueryBuilder extends Component {
 
         <button onClick={this.resetValue}>reset</button>
         <button onClick={this.clearValue}>clear</button>
+        <button onClick={this.reparseJsonLogic}>reparse</button>
 
         <div className="query-builder-result">
           {this.renderResult(this.state)}
@@ -50,13 +51,21 @@ export default class DemoQueryBuilder extends Component {
 
     resetValue = () => {
       this.setState({
-        tree: initTree, 
+        tree: initTree,
       });
     };
 
+    reparseJsonLogic = () => {
+      const {logic} = jsonLogicFormat(this.state.tree, this.state.config);
+      const imTreeFromJsonLogic = loadFromJsonLogic(logic, this.state.config);
+      this.setState({
+        tree: imTreeFromJsonLogic
+      });
+    }
+
     clearValue = () => {
       this.setState({
-        tree: loadTree(emptyInitValue), 
+        tree: loadTree(emptyInitValue),
       });
     };
 
@@ -67,7 +76,7 @@ export default class DemoQueryBuilder extends Component {
         </div>
       </div>
     )
-    
+
     onChange = (immutableTree, config) => {
       this.immutableTree = immutableTree;
       this.config = config;
@@ -75,8 +84,8 @@ export default class DemoQueryBuilder extends Component {
 
       // `jsonTree` or `logic` can be saved to backend
       // (and then loaded with `loadTree` or `loadFromJsonLogic` as seen above)
-      const jsonTree = getTree(immutableTree);
-      const {logic, data, errors} = jsonLogicFormat(immutableTree, config);
+      //const jsonTree = getTree(immutableTree);
+      //const {logic, data, errors} = jsonLogicFormat(immutableTree, config);
     }
 
     updateResult = throttle(() => {
@@ -88,59 +97,22 @@ export default class DemoQueryBuilder extends Component {
       return (
         <div>
           <br />
-          <div>
-          stringFormat: 
-            <pre style={preStyle}>
-              {stringify(queryString(immutableTree, config), undefined, 2)}
-            </pre>
-          </div>
           <hr/>
           <div>
-          humanStringFormat: 
-            <pre style={preStyle}>
-              {stringify(queryString(immutableTree, config, true), undefined, 2)}
-            </pre>
-          </div>
-          <hr/>
-          <div>
-          sqlFormat: 
-            <pre style={preStyle}>
-              {stringify(sqlFormat(immutableTree, config), undefined, 2)}
-            </pre>
-          </div>
-          <hr/>
-          <div>
-          mongodbFormat: 
-            <pre style={preStyle}>
-              {stringify(mongodbFormat(immutableTree, config), undefined, 2)}
-            </pre>
-          </div>
-          <hr/>
-          <div>
-            <a href="http://jsonlogic.com/play.html" target="_blank" rel="noopener noreferrer">jsonLogicFormat</a>: 
-            { errors.length > 0 
+            <a href="http://jsonlogic.com/play.html" target="_blank" rel="noopener noreferrer">jsonLogicFormat</a>:
+            { errors.length > 0
               && <pre style={preErrorStyle}>
                 {stringify(errors, undefined, 2)}
-              </pre> 
+              </pre>
             }
             { !!logic
               && <pre style={preStyle}>
                 {"// Rule"}:<br />
                 {stringify(logic, undefined, 2)}
-                <br />
-                <hr />
-                {"// Data"}:<br />
-                {stringify(data, undefined, 2)}
               </pre>
             }
           </div>
           <hr/>
-          <div>
-          Tree: 
-            <pre style={preStyle}>
-              {stringify(getTree(immutableTree), undefined, 2)}
-            </pre>
-          </div>
         </div>
       );
     }
