@@ -18,6 +18,10 @@ Feel free to play with code in `src/demo` dir.
 6. check the json-logic structure **again**; should equal `src/data/jsonLogicReimported.json`
 7. diff the two files and see the difference
 
+## Going further to application crash
+8. click button "reparse" **again**; the application will crash caused by an exception
+
+
 ### Difference
 
 **Initially (jsonLogicGenerated.json)**
